@@ -30,20 +30,25 @@ jobs:
         with:
           node-version: '20'  # Specify the Node.js version
           cache: 'npm'  
-
-      # Install PNPM globally
-      - name: Install PNPM
-        run: npm install -g pnpm
-
-      # check PNPM version 
-      - name: Check PNPM version
-        run: pnpm --version
-
-      # Install dependencies and build Storybook
       - name: Install dependencies
         working-directory: ./client
-        run: pnpm install
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "Found pnpm-lock.yaml, installing dependencies with PNPM."
+            npm install -g pnpm
+            pnpm install
+          elif [ -f package-lock.json ]; then
+            echo "Found package-lock.json, installing dependencies with npm."
+            npm install
+          elif [ -f yarn.lock ]; then
+            echo "Found yarn.lock, installing dependencies with Yarn."
+            yarn install
+          else
+            echo "No lock file found, please check your project."
+            exit 1
+          fi
 
+      # build Storybook
       - name: Build Storybook
         working-directory: ./client
         run: pnpm run build-storybook -o ./docs
