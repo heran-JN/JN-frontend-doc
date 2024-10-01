@@ -34,15 +34,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
         working-directory: ./client
-        run: pnpm install
+        run: |
+          npm install || yarn install
 
       - name: Build Storybook
         working-directory: ./client
-        run: pnpm build-storybook -o ./docs
+        run: |
+          npm run build-storybook -o ./docs || yarn build-storybook -o ./docs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
