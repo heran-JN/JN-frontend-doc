@@ -18,6 +18,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
 
     steps:
       # Checkout the repository
@@ -29,7 +32,6 @@ jobs:
 
       - name: Detect package manager
         id: detect-package-manager
-        working-directory: ./client
         run: |
           if  [ -f yarn.lock ]; then
             echo "manager=yarn" >> $GITHUB_OUTPUT
@@ -55,15 +57,13 @@ jobs:
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
-        env:
-          WORKING_DIRECTORY: ./client  
+          cache-dependency-path: './client/pnpm-lock.yaml'
+     
       - name: Install dependencies
-        working-directory: ./client
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
 
       # build Storybook
       - name: Build Storybook
-        working-directory: ./client
         run: ${{ steps.detect-package-manager.outputs.manager }} run build-storybook -o ./docs
 
       - name: Upload artifact
