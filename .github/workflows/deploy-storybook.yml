@@ -1,6 +1,5 @@
 name: Deploy Storybook to GitHub Pages
 
-# This runs the workflow every time code is pushed to the main branch
 on:
   push:
     branches:
@@ -11,26 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository code
+      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Node.js environment
+      # Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # Ensure to match the Node version you're using
+          node-version: 'node'  
 
       # Install dependencies and build Storybook
       - name: Install dependencies and build Storybook
-        working-directory: ./client # Point to the client folder with Storybook
+        working-directory: ./client
         run: |
           npm install
           npm run build-storybook
 
       # Deploy the Storybook build to GitHub Pages
-      - name: Deploy Storybook to GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs # Folder where Storybook build is located
+          publish_dir: ./docs
