@@ -5,18 +5,19 @@ on:
     branches:
       - main
   workflow_dispatch:
+
 permissions:
   contents: write
   pages: write
   id-token: write
+
 concurrency:
   group: "pages"
   cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
-  
 
     steps:
       # Checkout the repository
@@ -27,24 +28,32 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 'node'
+          node-version: '20'  # Specify the Node.js version
           cache: 'npm'  
 
+      # Install PNPM globally
+      - name: Install PNPM
+        run: npm install -g pnpm
+
+      # check PNPM version 
+      - name: Check PNPM version
+        run: pnpm --version
+
       # Install dependencies and build Storybook
-      - name: Install dependencies and build Storybook
+      - name: Install dependencies
         working-directory: ./client
-        run: |
-          npm install
+        run: pnpm install
+
       - name: Build Storybook
         working-directory: ./client
-        run: |
-          npm run build-storybook
+        run: pnpm run build-storybook -o ./docs
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./client/docs
 
-# Deploy the Storybook build to GitHub Pages
+  # Deploy the Storybook build to GitHub Pages
   deploy:
     environment:
       name: github-pages
