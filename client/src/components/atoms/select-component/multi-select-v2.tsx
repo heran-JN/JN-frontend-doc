@@ -1,0 +1,330 @@
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import {
+  CheckIcon,
+  XCircle,
+  ChevronDown,
+  XIcon,
+  WandSparkles,
+} from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/shared/popover/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/shared/command/command";
+import { Button } from "../button/button";
+import ExpandIcon from "@/components/icons/expandIcon";
+import { Separator } from "@/components/shared/separator/separator";
+
+/**
+ * Variants for the multi-select component to handle different styles.
+ * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
+ */
+const multiSelectVariants = cva("", {
+  variants: {
+    variant: {
+      default: "",
+      secondary: "border-foreground/10 bg-secondary hover:bg-secondary/80",
+      destructive: "border-transparent bg-destructive  hover:bg-destructive/80",
+      inverted: "inverted",
+    },
+    size: {
+      small: "text-body2 font-body2",
+      default: "text-body1 font-body1",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "default",
+  },
+});
+
+/**
+ * Props for MultiSelect component
+ */
+interface MultiSelectProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof multiSelectVariants> {
+  /**
+   * An array of option objects to be displayed in the multi-select component.
+   * Each option object has a label, value, and an optional icon.
+   */
+  options: {
+    /** The text to display for the option. */
+    label: string;
+    /** The unique value associated with the option. */
+    value: string;
+    /** Optional icon component to display alongside the option. */
+    icon?: React.ComponentType<{ className?: string }>;
+  }[];
+
+  /**
+   * Callback function triggered when the selected values change.
+   * Receives an array of the new selected values.
+   */
+  onValueChange: (value: string[]) => void;
+
+  /** The default selected values when the component mounts. */
+  defaultValue?: string[];
+
+  /**
+   * Placeholder text to be displayed when no values are selected.
+   * Optional, defaults to "Select options".
+   */
+  placeholder?: string;
+
+  /**
+   * Animation duration in seconds for the visual effects (e.g., bouncing badges).
+   * Optional, defaults to 0 (no animation).
+   */
+  animation?: number;
+
+  /**
+   * Maximum number of items to display. Extra selected items will be summarized.
+   * Optional, defaults to 3.
+   */
+  maxCount?: number;
+
+  /**
+   * The modality of the popover. When set to true, interaction with outside elements
+   * will be disabled and only popover content will be visible to screen readers.
+   * Optional, defaults to false.
+   */
+  modalPopover?: boolean;
+
+  /**
+   * If true, renders the multi-select component as a child of another component.
+   * Optional, defaults to false.
+   */
+  asChild?: boolean;
+
+  /**
+   * Additional class names to apply custom styles to the multi-select component.
+   * Optional, can be used to add custom styles.
+   */
+  className?: string;
+}
+
+export const MultiSelect = React.forwardRef<
+  HTMLButtonElement,
+  MultiSelectProps
+>(
+  (
+    {
+      options,
+      onValueChange,
+      variant,
+      size,
+      defaultValue = [],
+      placeholder = "Select options",
+      animation = 0,
+      maxCount = 3,
+      modalPopover = false,
+      asChild = false,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const [selectedValues, setSelectedValues] =
+      React.useState<string[]>(defaultValue);
+    const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
+
+    const handleInputKeyDown = (
+      event: React.KeyboardEvent<HTMLInputElement>
+    ) => {
+      if (event.key === "Enter") {
+        setIsPopoverOpen(true);
+      } else if (event.key === "Backspace" && !event.currentTarget.value) {
+        const newSelectedValues = [...selectedValues];
+        newSelectedValues.pop();
+        setSelectedValues(newSelectedValues);
+        onValueChange(newSelectedValues);
+      }
+    };
+
+    const toggleOption = (option: string) => {
+      const newSelectedValues = selectedValues.includes(option)
+        ? selectedValues.filter((value) => value !== option)
+        : [...selectedValues, option];
+      setSelectedValues(newSelectedValues);
+      onValueChange(newSelectedValues);
+    };
+
+    const handleClear = () => {
+      setSelectedValues([]);
+      onValueChange([]);
+    };
+
+    const handleTogglePopover = () => {
+      setIsPopoverOpen((prev) => !prev);
+    };
+
+    const clearExtraOptions = () => {
+      const newSelectedValues = selectedValues.slice(0, maxCount);
+      setSelectedValues(newSelectedValues);
+      onValueChange(newSelectedValues);
+    };
+
+    const toggleAll = () => {
+      if (selectedValues.length === options.length) {
+        handleClear();
+      } else {
+        const allValues = options.map((option) => option.value);
+        setSelectedValues(allValues);
+        onValueChange(allValues);
+      }
+    };
+
+    return (
+      <Popover
+        open={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
+        modal={modalPopover}
+      >
+        <PopoverTrigger className=" bg-transparent rounded-none" asChild>
+          <Button
+            ref={ref}
+            {...props}
+            onClick={handleTogglePopover}
+            className={cn(
+              "flex w-full px=[20px] py-[10px] bg-primary  rounded-md border min-h-10 h-auto items-center justify-between  ",
+              className
+            )}
+          >
+            {selectedValues.length > 0 ? (
+              <div className="flex justify-between items-center w-full  text-primary-foreground  ">
+                <div
+                  className={cn(
+                    "flex flex-wrap items-center ",
+                    multiSelectVariants({ size })
+                  )}
+                >
+                  {selectedValues.slice(0, maxCount).map((value, index) => {
+                    const option = options.find((o) => o.value === value);
+
+                    return (
+                      <div
+                        key={value}
+                        className={cn("flex  ", multiSelectVariants({ size }))}
+                      >
+                        {index > 0 && <span className="mx-2">{","}</span>}
+
+                        {option?.label}
+                        <XIcon
+                          className="ml-2 h-3 w-3 cursor-pointer"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            toggleOption(value);
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                  {selectedValues.length > maxCount && (
+                    <div
+                      className={cn("flex  ", multiSelectVariants({ size }))}
+                    >
+                      {`  ...  + ${selectedValues.length - maxCount}`}
+                      <XIcon
+                        className="ml-2 h-3 w-3 cursor-pointer"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          clearExtraOptions();
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div
+                  className={cn(
+                    "flex items-center justify-between ",
+                    multiSelectVariants({ size })
+                  )}
+                >
+                  <XIcon
+                    className="h-4 mx-2 cursor-pointer "
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleClear();
+                    }}
+                  />
+                  <ExpandIcon className="w-4 h-4 mx-2 cursor-pointer " />
+                </div>
+              </div>
+            ) : (
+              <div
+                className={cn(
+                  "flex items-center justify-between w-full mx-auto ",
+                  multiSelectVariants({ size })
+                )}
+              >
+                <span className="text-muted-foreground mx-3">{placeholder}</span>
+
+                <ExpandIcon className=" w-4 h-4 cursor-pointer  mx-2" />
+              </div>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-auto rounded-sm p-0 bg-transparent "
+          onEscapeKeyDown={() => setIsPopoverOpen(false)}
+          side="bottom"
+          align="start"
+        >
+          <Command className="rounded-sm bg-transparent">
+            <CommandList className=" max-h-[200px] min-w-[200px] overflow-auto w-auto p-0    bg-transparent  rounded-none">
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup className="rounded-none p-0 bg-transparent">
+                {options.map((option) => {
+                  const isSelected = selectedValues.includes(option.value);
+                  return (
+                    <CommandItem
+                      key={option.value}
+                      onSelect={() => toggleOption(option.value)}
+                      className={cn(
+                        multiSelectVariants({ size }),
+                        "cursor-pointer  w-full h-full m-0 bg-primary text-primary-foreground hover:bg-interaction-hoverBg hover:text-interaction-hoverForeground rounded-none",
+                        isSelected
+                          ? "bg-interaction-selectedBg text-interaction-selectedForeground  hover:bg-interaction-hoverBg hover:text-interaction-hoverForeground"
+                          : ""
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "mr-2",
+                          isSelected ? "bg-transparent" : ""
+                        )}
+                      >
+                        {isSelected ? (
+                          <CheckIcon className="h-3 w-3" />
+                        ) : (
+                          <div className="h-3 w-3"></div>
+                        )}
+                      </div>
+                      <span   className={cn(
+                        multiSelectVariants({ size }))} >{option.label}</span>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+);
+
+MultiSelect.displayName = "MultiSelect";

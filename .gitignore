@@ -1,0 +1,14 @@
+# dependencies
+/client/node_modules
+/client/.pnp
+/client/.pnp.js
+/client/.yarn/install-state.gz
+
+# debug
+/client/npm-debug.log*
+/client/yarn-debug.log*
+/client/yarn-error.log*
+
+# next.js
+/client/.next/
+/client/out/

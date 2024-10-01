@@ -1,0 +1,118 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: #0c0c0c;
+    --foreground: #111;
+    --card: #111;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: #0c0c0c;
+    --primary-foreground: #ffffff;
+    --secondary: #0c0c0c;
+    --secondary-foreground: #ffffff;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: #82d2ff;
+    --accent-foreground: #0c0c0c;
+    --destructive: #ff8293;
+    --destructive-foreground: #ffffff;
+    --border: #191919;
+    --light-border: rgba(255, 255, 255, 0.5);
+    --input-text: #ffffff;
+    --input-field-bg: #242424;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+    --radius20: 1.25rem;
+    --radius10: 0.625rem;
+    --radius30: 1.875rem;
+    --Hover-and-stroke: #212121;
+    --gray: #5f5f5f;
+    --box-shadow: 0px 0px 3px 0px rgba(255, 255, 255, 0.1) inset;
+    --box-shadow-sm: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+    --border-width: 0.5px;
+    --white: #fff;
+    --black: #0c0c0c;
+    --white-50: rgba(255, 255, 255, 0.5);
+    --component-background: #0c0c0c;
+    --component-foreground: #ffffff;
+    --component-hover-background: rgba(255, 255, 255, 0.5);
+    --component-hover-foreground: #ffffff;
+    --component-selected-background: #ffffff;
+    --component-selected-foreground: #0c0c0c;
+  }
+
+  .dark {
+    --background: #0c0c0c;
+    --foreground: #111;
+    --card: #111;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --component-background: #0c0c0c;
+    --component-foreground: #ffffff;
+    --component-hover-background: rgba(255, 255, 255, 0.5);
+    --component-hover-foreground: #ffffff;
+    --component-selected-background: #ffffff;
+    --component-selected-foreground: #0c0c0c;
+    --primary: #0c0c0c;
+    --primary-foreground: #ffffff;
+    --secondary: rgba(255, 255, 255, 0.5);
+    --secondary-foreground: #ffffff;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: #82d2ff;
+    --accent-foreground: #0c0c0c;
+    --destructive: #ff8293;
+    --destructive-foreground: #ffffff;
+    --border: #191919;
+    --light-border: rgba(255, 255, 255, 0.5);
+    --input-text: #ffffff;
+    --input-field-bg: #242424;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+    --radius20: 1.25rem;
+    --radius10: 0.625rem;
+    --radius30: 1.875rem;
+    --Hover-and-stroke: #212121;
+    --gray: #5f5f5f;
+    --box-shadow: 0px 0px 3px 0px rgba(255, 255, 255, 0.1) inset;
+    --box-shadow-sm: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+    --border-width: 0.5px;
+    --white: #fff;
+    --black: #0c0c0c;
+    --white-50: rgba(255, 255, 255, 0.5);
+  }
+}
+.component-base {
+  @apply p-0 m-0;
+}
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+.react-flow__attribution {
+  display: none;
+}
