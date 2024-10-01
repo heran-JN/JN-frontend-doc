@@ -53,9 +53,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          path: ./client
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
+        env:
+          WORKING_DIRECTORY: ./client  
       - name: Install dependencies
         working-directory: ./client
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
