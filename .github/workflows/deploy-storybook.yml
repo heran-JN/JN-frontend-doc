@@ -26,6 +26,7 @@ jobs:
       # Install PNPM globally
       - name: Install PNPM
         run: npm install -g pnpm
+
       - name: Detect package manager
         id: detect-package-manager
         working-directory: ./client
@@ -52,9 +53,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
+          path: ./client
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Install dependencies
+        working-directory: ./client
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
 
       # build Storybook
